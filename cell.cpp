@@ -17,22 +17,22 @@ void Cell::set_status(int value) {
 }
 
 size_t Cell::get_right(size_t ncols) {
-    if (col == ncols) return 0;
+    if (col == ncols-1) return 0;
     else return col + 1;
 }
 
 size_t Cell::get_left(size_t ncols) {
-    if (col == 0) return ncols;
+    if (col == 0) return ncols - 1;
     else return col - 1;
 }
 
 size_t Cell::get_top(size_t nrows) {
-    if (row == 0) return nrows;
+    if (row == 0) return nrows - 1;
     else return row - 1;
 }
 
 size_t Cell::get_bottom(size_t nrows) {
-    if (row == nrows) return 0;
+    if (row == nrows-1) return 0;
     else return row + 1;
 }
 

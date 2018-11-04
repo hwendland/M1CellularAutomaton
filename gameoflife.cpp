@@ -21,10 +21,12 @@ void GameOfLife::start_game() {
 vector<vector<Cell>> GameOfLife::get_random_field() {
     vector<vector<Cell>> randomField;
     for (size_t i=0; i< nrows; i++) {
+        vector<Cell> lineVec;
         for (size_t j=0; j<ncols; j++) {
             int value = rand() % 2;
-            randomField[i][j] = Cell(i, j, value);
+            lineVec.emplace_back(Cell(i, j, value));
         }
+        randomField.emplace_back(lineVec);
     }
     return randomField;
 }
@@ -42,14 +44,14 @@ string GameOfLife::current_to_string() {
 };
 
 void GameOfLife::print_current() {
-    cout << current_to_string();
+    cout << current_to_string() << endl;
 }
 
 int GameOfLife::count_living(Cell cell) {
-    size_t right = cell.get_right(ncols);
-    size_t left = cell.get_left(ncols);
-    size_t top = cell.get_top(nrows);
-    size_t bottom = cell.get_bottom(nrows);
+    size_t right = cell.get_right(this->ncols);
+    size_t left = cell.get_left(this->ncols);
+    size_t top = cell.get_top(this->nrows);
+    size_t bottom = cell.get_bottom(this->nrows);
     int aliveCount =
         currentGeneration[top][left] +
         currentGeneration[top][cell.col] +
@@ -64,22 +66,16 @@ int GameOfLife::count_living(Cell cell) {
 
 void GameOfLife::evolve() {
     print_current();
+    vector<vector<Cell>> nextGeneration;
     for (size_t i=0; i< nrows; i++) {
+        vector<Cell> lineVec;
         for (size_t j=0; j<ncols; j++) {
             Cell currentCell = currentGeneration[i][j];
             int aliveCount = count_living(currentCell);
             currentCell.evolve(aliveCount);
-            nextGeneration[i][j] = currentCell;
+            lineVec.emplace_back(currentCell);
         }
+        nextGeneration.emplace_back(lineVec);
     }
-    copy_next_to_current();
-    print_current();
-}
-
-void GameOfLife::copy_next_to_current() {
-    for (size_t i=0; i< nrows; i++) {
-        for (size_t j=0; j<ncols; j++) {
-            currentGeneration[i][j] = nextGeneration[i][j];
-        }
-    }
+    currentGeneration = nextGeneration;
 }

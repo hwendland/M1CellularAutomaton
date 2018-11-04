@@ -10,10 +10,8 @@ class GameOfLife
     size_t nrows, ncols;
 
     vector<vector<Cell>> currentGeneration;
-    vector<vector<Cell>> nextGeneration;
 
     vector<vector<Cell>> get_random_field();
-    void copy_next_to_current();
     int count_living(Cell cell);
 
 public:

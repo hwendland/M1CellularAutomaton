@@ -4,4 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    gameoflife.cpp \
+    cell.cpp
+
+HEADERS += \
+    gameoflife.h \
+    cell.h

@@ -5,20 +5,55 @@ using namespace std;
 GameOfLife::GameOfLife() {
     nrows = 30;
     ncols = 30;
+    get_random_field();
 }
 
 void GameOfLife::change_field_size(size_t newRows, size_t newCols) {
-    ncols = newRows;
-    nrows = newCols;
+    nrows = newRows;
+    ncols = newCols;
 }
 
-void GameOfLife::start_game() {
-    if (!currentGeneration.size()) {
-        currentGeneration = get_random_field();
+void GameOfLife::import_state(const string filename) {
+    ifstream myfile;
+    string line;
+    vector<vector<Cell>> field;
+    myfile.open(filename);
+    bool open = myfile.is_open();
+    if (open)  {
+        size_t row = 0;
+        while (myfile >> line) {
+            if (row < 2) {}
+            else field.emplace_back(toCellVec(line, row-2));
+            row ++;
+        }
     }
-};
+    myfile.close();
+    currentGeneration = field;
+    nrows = field.size();
+    ncols = field[0].size();
+}
 
-vector<vector<Cell>> GameOfLife::get_random_field() {
+vector<Cell> GameOfLife::toCellVec(string line, size_t row) {
+    vector<Cell> cellVec;
+    for (size_t col = 0; col < line.size(); col++) {
+        Cell newCell = Cell(row, col);
+        assert(line[col] == 'o' || line[col] == '*');
+        newCell.set_status(newCell.status_from_char(line[col]));
+        cellVec.emplace_back(newCell);
+    }
+    return cellVec;
+}
+
+void GameOfLife::write_to_file(string outfile) {
+    ofstream myOutfile;
+    string output = current_to_string();
+    myOutfile.open(outfile, ios::out);
+    cout << "Saving state to " << outfile << endl;
+    myOutfile << nrows << endl << ncols << endl << output;
+    myOutfile.close();
+}
+
+void GameOfLife::get_random_field() {
     vector<vector<Cell>> randomField;
     for (size_t i=0; i< nrows; i++) {
         vector<Cell> lineVec;
@@ -28,7 +63,7 @@ vector<vector<Cell>> GameOfLife::get_random_field() {
         }
         randomField.emplace_back(lineVec);
     }
-    return randomField;
+    this->currentGeneration = randomField;
 }
 
 string GameOfLife::current_to_string() {
@@ -36,7 +71,7 @@ string GameOfLife::current_to_string() {
     for (size_t i=0; i<nrows; i++) {
         for (size_t j=0; j<ncols; j++) {
             Cell cell = currentGeneration[i][j];
-            matrixOut.append(to_string(cell.status) + ' ');
+            matrixOut += cell.status_to_char();
         }
         matrixOut.append("\n");
     }
@@ -65,7 +100,6 @@ int GameOfLife::count_living(Cell cell) {
 }
 
 void GameOfLife::evolve() {
-    print_current();
     vector<vector<Cell>> nextGeneration;
     for (size_t i=0; i< nrows; i++) {
         vector<Cell> lineVec;

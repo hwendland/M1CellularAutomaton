@@ -16,6 +16,29 @@ void Cell::set_status(int value) {
     status = value;
 }
 
+void Cell::set_status(char newStatus) {
+    return set_status(status_from_char(newStatus));
+}
+
+int Cell::status_from_char(const char x) {
+    switch (x) {
+        case 'o': return 0;
+        case '*': return 1;
+        default: {
+            cout << "Invalid. Using default value of o.\n";
+            return 0;
+         }
+    }
+}
+
+char Cell::status_to_char() {
+    switch(status) {
+        case 0: return 'o';
+        case 1: return '*';
+        default: return 'o';
+    }
+}
+
 size_t Cell::get_right(size_t ncols) {
     if (col == ncols-1) return 0;
     else return col + 1;

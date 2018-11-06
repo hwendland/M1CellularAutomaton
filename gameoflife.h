@@ -9,22 +9,26 @@ using namespace std;
 class GameOfLife
 {
 
+    Cell **get_dynamic_array(const pair<int, int> dimensions);
+    void set_current(Cell **field);
+
+    pair<int,int> get_dimensions(const string filename);
+
     string current_to_string();
 
-    vector<Cell> toCellVec(string line, size_t row);
     int count_living(Cell cell);
 
 
 public:
     GameOfLife();
 
-    void get_random_field();
-    void change_field_size(size_t nrows, size_t ncols);
+    void get_random_field(const pair <int, int> dimensions);
+    void change_field_size(int nrows, int ncols);
     void import_state(const string filename);
     void write_to_file(string outfile);
 
-    size_t nrows, ncols;
-    vector<vector<Cell>> currentGeneration;
+    int nrows, ncols;
+    Cell **currentGeneration;
     void print_current();
 
     void start_game();

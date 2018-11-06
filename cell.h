@@ -8,11 +8,12 @@ using namespace std;
 class Cell
 {
 public:
-    Cell(size_t i, size_t j);
-    Cell(size_t i, size_t j, int value);
+    Cell() {}
+    Cell(int i, int j);
+    Cell(int i, int j, int value);
 
-    size_t row;
-    size_t col;
+    int row;
+    int col;
 
     int status;
     void set_status(int value);
@@ -20,10 +21,10 @@ public:
     int status_from_char(char x);
     char status_to_char();
 
-    size_t get_right(size_t ncols);
-    size_t get_left(size_t ncols);
-    size_t get_top(size_t nrows);
-    size_t get_bottom(size_t nrows);
+    int get_right(int ncols);
+    int get_left(int ncols);
+    int get_top(int nrows);
+    int get_bottom(int nrows);
 
     void evolve(int aliveCount);
 };

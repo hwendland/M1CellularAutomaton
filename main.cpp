@@ -1,16 +1,7 @@
 #include "gameoflife.h"
 #include <unistd.h>
 
-size_t to_stui(string input) {
-    try {
-        return stoul(input);
-    } catch (exception) {
-        cout << "That didn't work.";
-        return 0;
-    }
-}
-
-int to_stsi(string input) {
+int to_stoi(string input) {
     try {
         return stoi(input);
     } catch (exception) {
@@ -44,19 +35,19 @@ GameOfLife import_wrapper(GameOfLife game) {
 }
 
 GameOfLife random_start_wrapper(GameOfLife game) {
-    cout << "Default field size is 30x30. Modify field size? [Y/N] \n >>>";
+    cout << "Default field size is 30x30. Modify field size? [Y/N] \n>>>";
     string input;
     cin >> input;
     if (input == "Y") {
         cout << "Enter number of rows: \n>>>";
         cin >> input;
-        size_t nrows = to_stui(input);
+        int rows = to_stoi(input);
         cout << "Enter number of columns: \n>>>";
         cin >> input;
-        size_t ncols = to_stui(input);
-        game.change_field_size(nrows, ncols);
+        int cols = to_stoi(input);
+        game.change_field_size(rows, cols);
     }
-    game.get_random_field();
+    game.get_random_field({game.nrows, game.ncols});
     cout << "Successfully generated random state. \n";
     return game;
 }
@@ -76,10 +67,10 @@ GameOfLife evolution_wrapper(GameOfLife game) {
     cout << "Enter number of steps: \n>>>";
     string input;
     cin >> input;
-    int nSteps = to_stsi(input);
+    int nSteps = to_stoi(input);
     cout << "Starting evolution. \n";
     int i = 0;
-    while (i < nSteps) {
+    while (i <= nSteps) {
         game.evolve();
         game.print_current();
         usleep(80000);
@@ -92,14 +83,14 @@ GameOfLife change_cell_wrapper(GameOfLife game) {
     string input;
     cout << "Enter row of cell: \n>>>";
     cin >> input;
-    size_t row = to_stui(input) - 1;
+    int row = to_stoi(input) - 1;
     cout << "Enter column of cell: \n>>>";
     cin >> input;
-    size_t col = to_stui(input) - 1;
+    int col = to_stoi(input) - 1;
     if (row >= game.nrows || col >= game.ncols) {
-        cout << "Invalid row or column.";
+        cout << "Invalid row or column.\n";
     } else {
-        cout << "Enter new value of cell: [*/o] \n >>>";
+        cout << "Enter new value of cell: [*/o] \n>>>";
         cin >> input;
         game.currentGeneration[row][col].set_status(input.front());
         cout << "Change successful. \n";
@@ -117,7 +108,7 @@ GameOfLife console(GameOfLife game) {
     else if (input == "D") return evolution_wrapper(game);
     else if (input == "E") return change_cell_wrapper(game);
     else if (input == "F") { cout << "Bye! \n"; abort(); }
-    else {cout << "Try again";}
+    else {cout << "Try again. \n";}
     return game;
 }
 

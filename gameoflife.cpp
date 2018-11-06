@@ -5,43 +5,78 @@ using namespace std;
 GameOfLife::GameOfLife() {
     nrows = 30;
     ncols = 30;
-    get_random_field();
+    currentGeneration = get_dynamic_array({nrows, ncols});
+    get_random_field({nrows, ncols});
 }
 
-void GameOfLife::change_field_size(size_t newRows, size_t newCols) {
+void GameOfLife::change_field_size(int newRows, int newCols) {
     nrows = newRows;
     ncols = newCols;
 }
 
-void GameOfLife::import_state(const string filename) {
+pair<int,int> GameOfLife::get_dimensions(const string filename) {
     ifstream myfile;
-    string line;
-    vector<vector<Cell>> field;
+    pair<int, int> dimensions = {0,0};
     myfile.open(filename);
-    bool open = myfile.is_open();
-    if (open)  {
-        size_t row = 0;
-        while (myfile >> line) {
-            if (row < 2) {}
-            else field.emplace_back(toCellVec(line, row-2));
-            row ++;
+    if (myfile.is_open()) {
+        string line;
+        int i = 0;
+        while (myfile >> line && i < 2) {
+            if (i == 0) dimensions.first = stoi(line);
+            else if (i == 1) dimensions.second = stoi(line);
+            i++;
         }
     }
-    myfile.close();
-    currentGeneration = field;
-    nrows = field.size();
-    ncols = field[0].size();
+    return dimensions;
 }
 
-vector<Cell> GameOfLife::toCellVec(string line, size_t row) {
-    vector<Cell> cellVec;
-    for (size_t col = 0; col < line.size(); col++) {
-        Cell newCell = Cell(row, col);
-        assert(line[col] == 'o' || line[col] == '*');
-        newCell.set_status(newCell.status_from_char(line[col]));
-        cellVec.emplace_back(newCell);
+Cell **GameOfLife::get_dynamic_array(const pair<int, int> dimensions){
+    Cell **dynArray;
+    dynArray = new Cell*[dimensions.first];
+    for (int i=0; i<dimensions.first; i++) {
+        dynArray[i] = new Cell[dimensions.second];
     }
-    return cellVec;
+    return dynArray;
+}
+
+void GameOfLife::set_current(Cell **field) {
+    for (int i=0; i<nrows; i++) {
+        for (int j=0; j<ncols; j++) {
+            currentGeneration[i][j] = field[i][j];
+        }
+    }
+    delete field;
+}
+
+void GameOfLife::import_state(const string filename) {
+    const pair<int, int> dimensions = get_dimensions(filename);
+    ifstream myfile;
+    string line;
+    Cell **field = get_dynamic_array(dimensions);
+    myfile.open(filename);
+    if (myfile.is_open())  {
+        int row = 0;
+        while (myfile >> line) {
+            if (row < 2) {}
+            else {
+                for (int col = 0; col < dimensions.second; col++) {
+                    const size_t pos = static_cast<size_t>(col);
+                    if (line[pos] == 'o' || line[pos] == '*') {
+                        field[row-2][col] = Cell(row, col);
+                        field[row-2][col].set_status(field[row-2][col].status_from_char(line[pos]));
+                    } else {
+                        field[row-2][col] = Cell(row-2, col, 0);
+                        cout << "Replacing invalid cell content with default: o \n";
+                    }
+                }
+            }
+            row ++;
+        }
+        myfile.close();
+    }
+    nrows = dimensions.first;
+    ncols = dimensions.second;
+    set_current(field);
 }
 
 void GameOfLife::write_to_file(string outfile) {
@@ -53,23 +88,23 @@ void GameOfLife::write_to_file(string outfile) {
     myOutfile.close();
 }
 
-void GameOfLife::get_random_field() {
-    vector<vector<Cell>> randomField;
-    for (size_t i=0; i< nrows; i++) {
-        vector<Cell> lineVec;
-        for (size_t j=0; j<ncols; j++) {
+void GameOfLife::get_random_field(const pair<int, int> dimensions) {
+    Cell **randomField = get_dynamic_array(dimensions);
+    for (int i=0; i< dimensions.first; i++) {
+        for (int j=0; j< dimensions.second; j++) {
             int value = rand() % 2;
-            lineVec.emplace_back(Cell(i, j, value));
+            randomField[i][j] = Cell(i, j, value);
         }
-        randomField.emplace_back(lineVec);
     }
-    this->currentGeneration = randomField;
+    nrows = dimensions.first;
+    ncols = dimensions.second;
+    set_current(randomField);
 }
 
 string GameOfLife::current_to_string() {
     string matrixOut;
-    for (size_t i=0; i<nrows; i++) {
-        for (size_t j=0; j<ncols; j++) {
+    for (int i=0; i<nrows; i++) {
+        for (int j=0; j<ncols; j++) {
             Cell cell = currentGeneration[i][j];
             matrixOut += cell.status_to_char();
         }
@@ -83,10 +118,10 @@ void GameOfLife::print_current() {
 }
 
 int GameOfLife::count_living(Cell cell) {
-    size_t right = cell.get_right(this->ncols);
-    size_t left = cell.get_left(this->ncols);
-    size_t top = cell.get_top(this->nrows);
-    size_t bottom = cell.get_bottom(this->nrows);
+    int right = cell.get_right(this->ncols);
+    int left = cell.get_left(this->ncols);
+    int top = cell.get_top(this->nrows);
+    int bottom = cell.get_bottom(this->nrows);
     int aliveCount =
         currentGeneration[top][left] +
         currentGeneration[top][cell.col] +
@@ -100,16 +135,14 @@ int GameOfLife::count_living(Cell cell) {
 }
 
 void GameOfLife::evolve() {
-    vector<vector<Cell>> nextGeneration;
-    for (size_t i=0; i< nrows; i++) {
-        vector<Cell> lineVec;
-        for (size_t j=0; j<ncols; j++) {
+    Cell **nextGeneration = get_dynamic_array({nrows, ncols});
+    for (int i=0; i< nrows; i++) {
+        for (int j=0; j<ncols; j++) {
             Cell currentCell = currentGeneration[i][j];
             int aliveCount = count_living(currentCell);
             currentCell.evolve(aliveCount);
-            lineVec.emplace_back(currentCell);
+            nextGeneration[i][j] = currentCell;
         }
-        nextGeneration.emplace_back(lineVec);
     }
-    currentGeneration = nextGeneration;
+    set_current(nextGeneration);
 }

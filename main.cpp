@@ -37,17 +37,21 @@ GameOfLife import_wrapper(GameOfLife game) {
 GameOfLife random_start_wrapper(GameOfLife game) {
     cout << "Default field size is 30x30. Modify field size? [Y/N] \n>>>";
     string input;
+    pair<int,int> dimensions = {30, 30};
     cin >> input;
     if (input == "Y") {
         cout << "Enter number of rows: \n>>>";
         cin >> input;
-        int rows = to_stoi(input);
+        dimensions.first = to_stoi(input);
         cout << "Enter number of columns: \n>>>";
         cin >> input;
-        int cols = to_stoi(input);
-        game.change_field_size(rows, cols);
+        dimensions.second = to_stoi(input);
+        game.change_dimensions(dimensions);
     }
-    game.get_random_field({game.nrows, game.ncols});
+    else if (dimensions.first != game.nrows || dimensions.second != game.ncols) {
+        game.change_dimensions(dimensions);
+    }
+    game.get_random_field();
     cout << "Successfully generated random state. \n";
     return game;
 }
@@ -70,7 +74,8 @@ GameOfLife evolution_wrapper(GameOfLife game) {
     int nSteps = to_stoi(input);
     cout << "Starting evolution. \n";
     int i = 0;
-    while (i <= nSteps) {
+    game.print_current();
+    while (i < nSteps) {
         game.evolve();
         game.print_current();
         usleep(80000);

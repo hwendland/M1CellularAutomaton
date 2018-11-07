@@ -10,20 +10,20 @@ class GameOfLife
 {
 
     Cell **get_dynamic_array(const pair<int, int> dimensions);
-    void set_current(Cell **field);
+
+    Cell **nextGeneration;
+    void set_current();
 
     pair<int,int> get_dimensions(const string filename);
-
     string current_to_string();
 
     int count_living(Cell cell);
 
-
 public:
     GameOfLife();
 
-    void get_random_field(const pair <int, int> dimensions);
-    void change_field_size(int nrows, int ncols);
+    void get_random_field();
+    void change_dimensions(const pair<int, int> dimensions);
     void import_state(const string filename);
     void write_to_file(string outfile);
 

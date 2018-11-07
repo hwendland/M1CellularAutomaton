@@ -6,12 +6,17 @@ GameOfLife::GameOfLife() {
     nrows = 30;
     ncols = 30;
     currentGeneration = get_dynamic_array({nrows, ncols});
-    get_random_field({nrows, ncols});
+    nextGeneration = get_dynamic_array({nrows, ncols});
+    get_random_field();
 }
 
-void GameOfLife::change_field_size(int newRows, int newCols) {
-    nrows = newRows;
-    ncols = newCols;
+void GameOfLife::change_dimensions(const pair<int, int> dimensions) {
+    nrows = dimensions.first;
+    ncols = dimensions.second;
+    delete currentGeneration;
+    delete nextGeneration;
+    currentGeneration = get_dynamic_array(dimensions);
+    nextGeneration = get_dynamic_array(dimensions);
 }
 
 pair<int,int> GameOfLife::get_dimensions(const string filename) {
@@ -39,20 +44,11 @@ Cell **GameOfLife::get_dynamic_array(const pair<int, int> dimensions){
     return dynArray;
 }
 
-void GameOfLife::set_current(Cell **field) {
-    for (int i=0; i<nrows; i++) {
-        for (int j=0; j<ncols; j++) {
-            currentGeneration[i][j] = field[i][j];
-        }
-    }
-    delete field;
-}
-
 void GameOfLife::import_state(const string filename) {
     const pair<int, int> dimensions = get_dimensions(filename);
+    change_dimensions(dimensions);
     ifstream myfile;
     string line;
-    Cell **field = get_dynamic_array(dimensions);
     myfile.open(filename);
     if (myfile.is_open())  {
         int row = 0;
@@ -62,10 +58,10 @@ void GameOfLife::import_state(const string filename) {
                 for (int col = 0; col < dimensions.second; col++) {
                     const size_t pos = static_cast<size_t>(col);
                     if (line[pos] == 'o' || line[pos] == '*') {
-                        field[row-2][col] = Cell(row, col);
-                        field[row-2][col].set_status(field[row-2][col].status_from_char(line[pos]));
+                        currentGeneration[row-2][col] = Cell(row-2, col);
+                        currentGeneration[row-2][col].set_status(currentGeneration[row-2][col].status_from_char(line[pos]));
                     } else {
-                        field[row-2][col] = Cell(row-2, col, 0);
+                        currentGeneration[row-2][col] = Cell(row-2, col, 0);
                         cout << "Replacing invalid cell content with default: o \n";
                     }
                 }
@@ -74,9 +70,6 @@ void GameOfLife::import_state(const string filename) {
         }
         myfile.close();
     }
-    nrows = dimensions.first;
-    ncols = dimensions.second;
-    set_current(field);
 }
 
 void GameOfLife::write_to_file(string outfile) {
@@ -88,17 +81,13 @@ void GameOfLife::write_to_file(string outfile) {
     myOutfile.close();
 }
 
-void GameOfLife::get_random_field(const pair<int, int> dimensions) {
-    Cell **randomField = get_dynamic_array(dimensions);
-    for (int i=0; i< dimensions.first; i++) {
-        for (int j=0; j< dimensions.second; j++) {
+void GameOfLife::get_random_field() {
+    for (int i=0; i< nrows; i++) {
+        for (int j=0; j< ncols; j++) {
             int value = rand() % 2;
-            randomField[i][j] = Cell(i, j, value);
+            currentGeneration[i][j] = Cell(i, j, value);
         }
     }
-    nrows = dimensions.first;
-    ncols = dimensions.second;
-    set_current(randomField);
 }
 
 string GameOfLife::current_to_string() {
@@ -134,15 +123,21 @@ int GameOfLife::count_living(Cell cell) {
     return aliveCount;
 }
 
-void GameOfLife::evolve() {
-    Cell **nextGeneration = get_dynamic_array({nrows, ncols});
-    for (int i=0; i< nrows; i++) {
+void GameOfLife::set_current() {
+    for (int i=0; i<nrows; i++) {
         for (int j=0; j<ncols; j++) {
-            Cell currentCell = currentGeneration[i][j];
-            int aliveCount = count_living(currentCell);
-            currentCell.evolve(aliveCount);
-            nextGeneration[i][j] = currentCell;
+            currentGeneration[i][j] = nextGeneration[i][j];
         }
     }
-    set_current(nextGeneration);
+}
+
+void GameOfLife::evolve() {
+    for (int i=0; i< nrows; i++) {
+        for (int j=0; j<ncols; j++) {
+            int aliveCount = count_living(currentGeneration[i][j]);
+            nextGeneration[i][j] = currentGeneration[i][j];
+            nextGeneration[i][j].evolve(aliveCount);
+        }
+    }
+    set_current();
 }

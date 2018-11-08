@@ -30,7 +30,7 @@ GameOfLife import_wrapper(GameOfLife game) {
     if (file.good()) {
         game.import_state(input);
         cout << "Import successful.\n";
-    } else cout << "Something went wrong.\n";
+    } else cout << "File not found.\n";
     return game;
 }
 
@@ -112,17 +112,18 @@ GameOfLife console(GameOfLife game) {
     else if (input == "C") return export_wrapper(game);
     else if (input == "D") return evolution_wrapper(game);
     else if (input == "E") return change_cell_wrapper(game);
-    else if (input == "F") { cout << "Bye! \n"; abort(); }
+    else if (input == "F") { cout << "Bye! \n"; game.is_running = false; }
     else {cout << "Try again. \n";}
     return game;
 }
 
 int main() {
     GameOfLife game = GameOfLife();
-    while (true){
+    while (game.is_running){
         cout << "Current state is: \n \n";
         game.print_current();
         game = console(game);
     }
+    return 0;
 }
 

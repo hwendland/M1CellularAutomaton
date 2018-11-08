@@ -22,6 +22,8 @@ class GameOfLife
 public:
     GameOfLife();
 
+    bool is_running;
+
     void get_random_field();
     void change_dimensions(const pair<int, int> dimensions);
     void import_state(const string filename);

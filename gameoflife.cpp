@@ -3,6 +3,7 @@
 using namespace std;
 
 GameOfLife::GameOfLife() {
+    is_running = true;
     nrows = 30;
     ncols = 30;
     currentGeneration = get_dynamic_array({nrows, ncols});

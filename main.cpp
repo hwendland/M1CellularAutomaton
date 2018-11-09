@@ -1,15 +1,6 @@
 #include "gameoflife.h"
 #include <unistd.h>
 
-int to_stoi(string input) {
-    try {
-        return stoi(input);
-    } catch (exception) {
-        cout << "That didn't work.";
-        return 0;
-    }
-}
-
 void print_main_menu() {
     cout << "MENU \n";
     cout << "Choose an action: \n";
@@ -42,10 +33,10 @@ GameOfLife random_start_wrapper(GameOfLife game) {
     if (input == "Y") {
         cout << "Enter number of rows: \n>>>";
         cin >> input;
-        dimensions.first = to_stoi(input);
+        dimensions.first = GameOfLife::to_stoi(input);
         cout << "Enter number of columns: \n>>>";
         cin >> input;
-        dimensions.second = to_stoi(input);
+        dimensions.second = GameOfLife::to_stoi(input);
         game.change_dimensions(dimensions);
     }
     else if (dimensions.first != game.nrows || dimensions.second != game.ncols) {
@@ -71,7 +62,7 @@ GameOfLife evolution_wrapper(GameOfLife game) {
     cout << "Enter number of steps: \n>>>";
     string input;
     cin >> input;
-    int nSteps = to_stoi(input);
+    int nSteps = GameOfLife::to_stoi(input);
     cout << "Starting evolution. \n";
     int i = 0;
     game.print_current();
@@ -88,10 +79,10 @@ GameOfLife change_cell_wrapper(GameOfLife game) {
     string input;
     cout << "Enter row of cell: \n>>>";
     cin >> input;
-    int row = to_stoi(input) - 1;
+    int row = GameOfLife::to_stoi(input) - 1;
     cout << "Enter column of cell: \n>>>";
     cin >> input;
-    int col = to_stoi(input) - 1;
+    int col = GameOfLife::to_stoi(input) - 1;
     if (row >= game.nrows || col >= game.ncols) {
         cout << "Invalid row or column.\n";
     } else {

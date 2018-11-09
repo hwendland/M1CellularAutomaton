@@ -3,12 +3,12 @@
 #include "cell.h"
 #include <iostream>
 #include <fstream>
+#include <random>
 
 using namespace std;
 
 class GameOfLife
-{
-
+{  
     Cell **get_dynamic_array(const pair<int, int> dimensions);
 
     Cell **nextGeneration;
@@ -35,6 +35,8 @@ public:
 
     void start_game();
     void evolve();
+
+    static int to_stoi(string input);
 };
 
 #endif // GAMEOFLIFE_H

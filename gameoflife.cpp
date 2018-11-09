@@ -2,6 +2,10 @@
 
 using namespace std;
 
+static random_device rd;
+static mt19937 gen(rd());
+static uniform_int_distribution<int> dis(0, 1);
+
 GameOfLife::GameOfLife() {
     is_running = true;
     nrows = 30;
@@ -28,8 +32,8 @@ pair<int,int> GameOfLife::get_dimensions(const string filename) {
         string line;
         int i = 0;
         while (myfile >> line && i < 2) {
-            if (i == 0) dimensions.first = stoi(line);
-            else if (i == 1) dimensions.second = stoi(line);
+            if (i == 0) dimensions.first = to_stoi(line);
+            else if (i == 1) dimensions.second = to_stoi(line);
             i++;
         }
     }
@@ -82,10 +86,10 @@ void GameOfLife::write_to_file(string outfile) {
     myOutfile.close();
 }
 
-void GameOfLife::get_random_field() {
+void GameOfLife::get_random_field() {   
     for (int i=0; i< nrows; i++) {
         for (int j=0; j< ncols; j++) {
-            int value = rand() % 2;
+            int value = dis(gen);
             currentGeneration[i][j] = Cell(i, j, value);
         }
     }
@@ -141,4 +145,13 @@ void GameOfLife::evolve() {
         }
     }
     set_current();
+}
+
+int GameOfLife::to_stoi(string input) {
+    try {
+        return stoi(input);
+    } catch (exception) {
+        cout << "That didn't work.";
+        return 0;
+    }
 }

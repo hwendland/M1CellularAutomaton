@@ -35,7 +35,7 @@ char Cell::status_to_char() {
     switch(status) {
         case 0: return 'o';
         case 1: return '*';
-        default: return 'o';
+        default: return 'o'; // will never occur since status is always set from char
     }
 }
 

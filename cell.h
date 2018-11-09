@@ -18,7 +18,7 @@ public:
     int status;
     void set_status(int value);
     void set_status(char newStatus);
-    int status_from_char(char x);
+    static int status_from_char(char x);
     char status_to_char();
 
     int get_right(int ncols);

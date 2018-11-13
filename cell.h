@@ -5,11 +5,12 @@
 
 using namespace std;
 
-// Instances represent fields of the Cellular Automaton/Field for the Game of Life
 class Cell
 {
 public:
-    // Constructors
+    /*!
+     * @brief Concstructors. Instances represent fields of the Cellular Automaton/field for the Game of Life
+     */
     Cell() {}
     Cell(int i, int j);
     Cell(int i, int j, int value);
@@ -19,24 +20,42 @@ public:
     int col;
 
     int status; // 0 = o = dead; 1 = * = living
+    /*!
+     * @brief Change the Cell's status
+     * @param value: int status (0 or 1) for direct access
+     * @param newStatus: char status (* or o) will be converted to int
+     */
     void set_status(int value);
     void set_status(char newStatus);
-    // Conversion between integer and character status for file import/export and printing
+
+    /*!
+     * @brief Conversion between integer and character status for file import/export and printing
+     */
     static int status_from_char(char x);
     char status_to_char();
 
-    // Get neighboring indices (1D) for Moore neighborhood
+    /*!
+     * @brief Get neighboring row or column index (Moore neighborhood) on Game of Life field
+     * @param ncols: number of columns on the field
+     * @param nrows: number of rows on the field
+     * @returns row or column index of neighbor
+     */
     int get_right(int ncols);
     int get_left(int ncols);
     int get_top(int nrows);
     int get_bottom(int nrows);
 
-    // Next generation cell status based on number of living neighbours
+    /*!
+     * @brief Compute next generation cell status based on number of living neighbors
+     * @param aliveCount: number of living neighbor cells on the field
+     * @see GameOfLife::count_living
+     */
     void evolve(int aliveCount);
 };
 
-// Adding two cells is equivalent to adding their (integer) status
-// Simplifies counting of living cells in a neighborhood
+/*!
+ * @brief Convenience functions for counting living cells
+ */
 int operator+(Cell& lhs, Cell& rhs);
 int operator+(int x, Cell& rhs);
 

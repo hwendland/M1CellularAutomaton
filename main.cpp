@@ -1,6 +1,9 @@
 #include "gameoflife.h"
 #include <unistd.h>
 
+/*!
+ * @brief prints main menu
+ */
 void print_main_menu() {
     cout << "MENU \n";
     cout << "Choose an action: \n";
@@ -13,6 +16,11 @@ void print_main_menu() {
     cout << ">>> ";
 }
 
+/*!
+ * @brief Handles user input for file import
+ * @param game: current game
+ * @return modified game
+ */
 GameOfLife import_wrapper(GameOfLife game) {
     cout << "Enter the path to your file: \n>>> ";
     string input;
@@ -30,6 +38,11 @@ GameOfLife import_wrapper(GameOfLife game) {
     return game;
 }
 
+/*!
+ * @brief Handles user input for generating new random field
+ * @param game: current game
+ * @return modified game
+ */
 GameOfLife random_start_wrapper(GameOfLife game) {
     cout << "Default field size is 30x30. Modify field size? [Y/N] \n>>> ";
     string input;
@@ -56,6 +69,11 @@ GameOfLife random_start_wrapper(GameOfLife game) {
     return game;
 }
 
+/*!
+ * @brief Handles user input for export to file
+ * @param game: current game
+ * @return game
+ */
 GameOfLife export_wrapper(GameOfLife game) {
     cout << "Enter export path: \n>>> ";
     string input;
@@ -67,6 +85,11 @@ GameOfLife export_wrapper(GameOfLife game) {
     return game;
 }
 
+/*!
+ * @brief Handles user input (number of steps) for starting evolution
+ * @param game: current game
+ * @return game after n generations
+ */
 GameOfLife evolution_wrapper(GameOfLife game) {
     cout << "Enter number of steps: \n>>> ";
     string input;
@@ -85,10 +108,14 @@ GameOfLife evolution_wrapper(GameOfLife game) {
     } catch (int) {
         cout << "Invalid input. \n";
     }
-
     return game;
 }
 
+/*!
+ * @brief Handles user input for changing cell content
+ * @param game: current game
+ * @return game after n generations
+ */
 GameOfLife change_cell_wrapper(GameOfLife game) {
     string input;
     cout << "Enter row of cell: \n>>> ";
@@ -112,6 +139,9 @@ GameOfLife change_cell_wrapper(GameOfLife game) {
     return game;
 }
 
+/*!
+ * @brief selects wrapper based on user input
+ */
 GameOfLife console(GameOfLife game) {
     print_main_menu();
     string input;
@@ -126,6 +156,9 @@ GameOfLife console(GameOfLife game) {
     return game;
 }
 
+/*!
+ * @brief Creates a new game, promts for user input and prints state after each action
+ */
 int main() {
     GameOfLife game = GameOfLife();
     while (game.is_running){

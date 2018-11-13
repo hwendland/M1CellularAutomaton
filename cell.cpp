@@ -63,6 +63,8 @@ void Cell::evolve(int aliveCount) {
     }
 }
 
+// Adding two cells is equivalent to adding their (integer) status
+// Simplifies counting of living cells in a neighborhood
 int operator+(Cell& lhs, Cell& rhs) {
     return lhs.status + rhs.status;
 }

@@ -24,10 +24,7 @@ int Cell::status_from_char(const char x) {
     switch (x) {
         case 'o': return 0;
         case '*': return 1;
-        default: {
-            cout << "Invalid. Using default value of o.\n";
-            return 0;
-         }
+        default: throw 0;
     }
 }
 

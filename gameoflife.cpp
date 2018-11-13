@@ -149,7 +149,6 @@ int GameOfLife::to_stoi(string input) {
     try {
         return stoi(input);
     } catch (exception) {
-        cout << "That didn't work.";
-        return 0;
+        throw 0;
     }
 }

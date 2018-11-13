@@ -65,8 +65,7 @@ void GameOfLife::import_state(const string filename) {
                     if (line[pos] == 'o' || line[pos] == '*') {
                         currentGeneration[row-2][col] = Cell(row-2, col, Cell::status_from_char(line[pos]));
                     } else {
-                        currentGeneration[row-2][col] = Cell(row-2, col, 0);
-                        cout << "Replacing invalid cell content with default: o \n";
+                        throw 0;
                     }
                 }
             }
